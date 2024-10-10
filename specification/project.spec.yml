@@ -57,6 +57,13 @@ paths:
       summary: Проверка состояния пользователя
       description: Возвращает информацию по авторизованному пользователю
 
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Завершение сеанса пользователя
+      description: Если токен прошёл проверку, сервис завершает пользовательский сеанс (сессию). В противном случае возвращает ошибку и соответствующий код состояния.
+
   /users/{userId}/avatar:
     post:
       tags:
@@ -64,6 +71,136 @@ paths:
       summary: Загрузить изображение аватара
       description: Загружает изображение аватара пользователя. Изображение
         аватара должно быть в формате `png` или `jpg`.
+
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Получить список предложений
+      description: Возвращает список предложений не больше 60-ти если не указано иначе
+      requestBody:
+        description: Информация для создания нового предложения.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getOffers'
+        required: false
+
+  /offers/{offerId}:
+    get:
+      tags:
+        - offers
+      summary: Получить предложение с offerId
+      description: Возвращает предложение по указанному id
+
+  /offers/{offerId}/getComments:
+    get:
+      tags:
+        - comments
+      summary: Получить комментарии с  offerId
+      description: Возвращает комментарии предложения по указанному id.
+
+  /offers/{offerId}/createComment:
+    get:
+      tags:
+        - comments
+      summary: Добавить комментарии с  offerId
+      description: Добавляет комментарий в предложение по указанному id.
+
+      requestBody:
+        description: Информация для создания нового комментария.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+        required: true
+
+  /offers/create:
+    post:
+      tags:
+        - offers
+      summary: Создание нового предложения
+      description: Принимает переданую информацию и создаёт предложение.
+
+      requestBody:
+        description: Информация для создания нового предложения.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+        required: true
+
+  /offers/{offerId}/updateOffer:
+    post:
+      tags:
+        - offers
+      summary: Изменение предложения
+      description: Принимает информацию и обновляет её в предложении с offerId.
+
+      requestBody:
+        description: Информация для изменения предложения.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateOffer'
+        required: true
+
+  /offers/{offerId}/deleteOffer:
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения
+      description: Удаляет предложение с offerId.
+
+  /offers/premium:
+    get:
+      tags:
+        - offers
+      summary: Получить не больше трёх предложений с флагом «Premium».
+      description: Получить не больше трёх предложений с флагом «Premium».
+
+  /offers/favorite:
+    get:
+      tags:
+        - offers
+      summary: Получить список избранных предложений
+      description: Получить список избранных предложений
+
+      requestBody:
+        description: ID пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getFavoriteOffer'
+        required: true
+
+    post:
+      tags:
+        - offers
+      summary: Добавить предложение в избранное
+      description: Добавить предложение в избранное
+
+      requestBody:
+        description: ID пользователя и ID предложение.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/switchFavoriteOffer'
+        required: true
+
+    delete:
+      tags:
+        - offers
+      summary: Удалить предложение из избранного
+      description: Удалить предложение из избранного
+
+      requestBody:
+        description: ID пользователя и ID предложение.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/switchFavoriteOffer'
+        required: true
 
 components:
   schemas:
@@ -75,13 +212,9 @@ components:
           type: string
           example: keks@htmlacademy.ru
 
-        firstname:
+        name:
           type: string
           example: Keks
-
-        lastname:
-          type: string
-          example: Cat
 
         password:
           type: string
@@ -98,3 +231,172 @@ components:
         email:
           type: string
           example: keks@htmlacademy.ru
+
+    getOffers:
+      type: object
+
+      properties:
+        count: number
+        example: 20
+
+    createOffer:
+      type: object
+
+      properties:
+        title:
+          type: string;
+          example: Nice place
+
+        description:
+          type: string;
+          example: It was great weeknds!
+
+        createdDate:
+          type: string;
+          example: 2021-09-25T05:27:00
+
+        city:
+          type: string;
+          example: Paris
+
+        previewImage:
+          type: string;
+          example: https://www.jcppedit.com/images/overview.png
+
+        images:
+          type: string;
+          example: https://www.jcppedit.com/images/overview.png,https://www.jcppedit.com/images/overview.png,https://www.jcppedit.com/images/overview.png
+
+        isPremium:
+          type: boolean;
+          example: false
+
+        rating:
+          type: number;
+          example: 3.45
+
+        type:
+          type: string;
+          example: apartment
+
+        bedrooms:
+          type: number;
+          example: 2
+
+        maxAdults:
+          type: number;
+          example: 4
+
+        price:
+          type: number;
+          example: 200
+
+        goods:
+          type: string[];
+          example: Breakfast,Washer
+
+        hostId:
+          type: string;
+          example: 99311
+
+        lon:
+          type: number;
+          example: 51.225402
+
+        lat:
+          type: number
+          example: 6.776314
+
+    updateOffer:
+      type: object
+
+      properties:
+        title:
+          type: string;
+          example: Nice place
+
+        description:
+          type: string;
+          example: It was great weeknds!
+
+        createdDate:
+          type: string;
+          example: 2021-09-25T05:27:00
+
+        city:
+          type: string;
+          example: Paris
+
+        previewImage:
+          type: string;
+          example: https://www.jcppedit.com/images/overview.png
+
+        images:
+          type: string;
+          example: https://www.jcppedit.com/images/overview.png,https://www.jcppedit.com/images/overview.png,https://www.jcppedit.com/images/overview.png
+
+        isPremium:
+          type: boolean;
+          example: false
+
+        type:
+          type: string;
+          example: apartment
+
+        bedrooms:
+          type: number;
+          example: 2
+
+        maxAdults:
+          type: number;
+          example: 4
+
+        price:
+          type: number;
+          example: 200
+
+        goods:
+          type: string[];
+          example: Breakfast,Washer
+
+        lon:
+          type: number;
+          example: 51.225402
+
+        lat:
+          type: number
+          example: 6.776314
+
+    createComment:
+      type: object
+
+      properties:
+        text:
+          type: string
+          example: That was real good!
+
+        userId:
+          type: string
+          example: cvlmvonsdofg bn1
+
+        rating:
+          type: number
+          example: 4
+
+    getFavoriteOffer:
+      type: object
+      properties:
+        userId:
+          type: string
+          expamle: gojisjfbgj83
+
+    switchFavoriteOffer:
+      type: object
+      properties:
+        userId:
+          type: string
+          expamle: gojisjfbgj83
+        offerId:
+          type: string
+          expamle: js324jfbgj53
+

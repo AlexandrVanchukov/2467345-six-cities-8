@@ -11,7 +11,6 @@ export class UpdateOfferDto {
   public price?: number;
   public isPremium?: boolean;
   public isFavorite?: boolean;
-  public rating?: number;
   public bedrooms?: number;
   public maxAdults?: number;
   public goods?: Goods[];
